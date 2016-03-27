@@ -1,10 +1,8 @@
 package com.ultradux.geoquiz;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,12 +13,10 @@ import android.widget.Toast;
 
 public class QuizActivity extends AppCompatActivity {
 
-    private Button mTrueButton;
-    private Button mFalseButton;
-    private ImageButton mNextButton;
-    private ImageButton mPrevButton;
+    private static final String TAG = "QuizActivity";
     private TextView mQuestionTextView;
     private int mCurrentIndex = 0;
+    private static final String KEY_INDEX = "index";
 
     private Question[] mQuestionBank = new Question[]{
             new Question(R.string.question_oceans, true),
@@ -30,12 +26,19 @@ public class QuizActivity extends AppCompatActivity {
             new Question(R.string.question_asia, true)
     };
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate(Bundle) called");
         setContentView(R.layout.activity_quiz);
 
         mQuestionTextView = (TextView) findViewById(R.id.question_text_view);
+        ImageButton nextButton = (ImageButton) findViewById(R.id.next_button);
+        ImageButton prevButton = (ImageButton) findViewById(R.id.prev_button);
+        Button trueButton = (Button) findViewById(R.id.true_button);
+        Button falseButton = (Button) findViewById(R.id.false_button);
+
         mQuestionTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -44,9 +47,7 @@ public class QuizActivity extends AppCompatActivity {
             }
         });
 
-
-        mNextButton = (ImageButton) findViewById(R.id.next_button);
-        mNextButton.setOnClickListener(new View.OnClickListener() {
+        nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
@@ -54,46 +55,39 @@ public class QuizActivity extends AppCompatActivity {
             }
         });
 
-        mPrevButton = (ImageButton) findViewById(R.id.prev_button);
-        mPrevButton.setOnClickListener(new View.OnClickListener() {
+        prevButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    mCurrentIndex = (mCurrentIndex - 1) % mQuestionBank.length;
-                    if (mCurrentIndex < 0) {
-                        mCurrentIndex = mQuestionBank.length - 1;
-                    }
-                    updateQuestion();
+                mCurrentIndex = (mCurrentIndex - 1) % mQuestionBank.length;
+                if (mCurrentIndex < 0) {
+                    mCurrentIndex = mQuestionBank.length - 1;
+                }
+                updateQuestion();
             }
         });
 
-        mTrueButton = (Button) findViewById(R.id.true_button);
-        mTrueButton.setOnClickListener(new View.OnClickListener() {
+        trueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 checkAnswer(true);
             }
         });
 
-        mFalseButton = (Button) findViewById(R.id.false_button);
-        mFalseButton.setOnClickListener(new View.OnClickListener() {
+        falseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 checkAnswer(false);
             }
         });
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        if (savedInstanceState != null) {
+            mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
+        }
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        updateQuestion();
+
     }
+
 
     private void updateQuestion() {
         int question = mQuestionBank[mCurrentIndex].getTextResId();
@@ -102,7 +96,7 @@ public class QuizActivity extends AppCompatActivity {
 
     private void checkAnswer(boolean userPressedTrue) {
         boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
-        int messageResId = 0;
+        int messageResId;
         if (userPressedTrue == answerIsTrue) {
             messageResId = R.string.correct_toast;
         } else {
@@ -110,6 +104,44 @@ public class QuizActivity extends AppCompatActivity {
         }
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();
     }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.i(TAG, "onSaveInstanceState");
+        outState.putInt(KEY_INDEX, mCurrentIndex);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d(TAG, "onStart() called");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause() called");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume() called");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop() called");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy() called");
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -133,3 +165,4 @@ public class QuizActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 }
+
