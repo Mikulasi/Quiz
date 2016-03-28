@@ -1,5 +1,6 @@
 package com.ultradux.geoquiz;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -17,6 +18,7 @@ public class QuizActivity extends AppCompatActivity {
     private TextView mQuestionTextView;
     private int mCurrentIndex = 0;
     private static final String KEY_INDEX = "index";
+
 
     private Question[] mQuestionBank = new Question[]{
             new Question(R.string.question_oceans, true),
@@ -38,6 +40,7 @@ public class QuizActivity extends AppCompatActivity {
         ImageButton prevButton = (ImageButton) findViewById(R.id.prev_button);
         Button trueButton = (Button) findViewById(R.id.true_button);
         Button falseButton = (Button) findViewById(R.id.false_button);
+        Button mCheatButton = (Button) findViewById(R.id.cheat_button);
 
         mQuestionTextView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,6 +80,15 @@ public class QuizActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 checkAnswer(false);
+            }
+        });
+
+        mCheatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
+                Intent i = CheatActivity.newIntent(QuizActivity.this, answerIsTrue);
+                startActivity(i);
             }
         });
 
